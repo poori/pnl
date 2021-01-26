@@ -1,0 +1,455 @@
+{
+  "data": {
+    "account": {
+      "id": "0x896e5e594ddf322cd180f01df263e0f22ac07a83",
+      "transactions": [
+        {
+          "id": "0x01f49765360f55db69796ae40822a8d7e075e1e816bc8b8863f63c653b2e2470",
+          "type": "Buy",
+          "timestamp": "1611344054",
+          "market": {
+            "id": "0x6b83d6fb6cc38d5d0e3fcb44fdf2618450faf28b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "1000000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "1042066820",
+          "feeAmount": "20000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x0a941a0fd4641f18031948e93c2325980cad580b980b802dc70e37f96d3954d3",
+          "type": "Buy",
+          "timestamp": "1604161379",
+          "market": {
+            "id": "0xc2494800ed0e7309cce48e9c247e25befb29f9fd",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "8810000",
+          "outcomeIndex": "0",
+          "outcomeTokensAmount": "32565627",
+          "feeAmount": "176200",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x0e92fb8448b5de68f53b013c456af3190c7164a284f52ec35c9c251857fa73c5",
+          "type": "Buy",
+          "timestamp": "1605056881",
+          "market": {
+            "id": "0xcc459f92abb7ed7ae24673c7839682b9696e3b24",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "187000000",
+          "outcomeIndex": "0",
+          "outcomeTokensAmount": "229368897",
+          "feeAmount": "3740000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x0f9882e44d476c5fe36222d0a3b6dd671b9502a12a5aae8d5ec3e6d9fbd56158",
+          "type": "Buy",
+          "timestamp": "1611270764",
+          "market": {
+            "id": "0x6b83d6fb6cc38d5d0e3fcb44fdf2618450faf28b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "1000000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "1041113082",
+          "feeAmount": "20000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x14c7f084452e1d2bb46dca7395b78bd5a424df8bafe127089d63a95fec88488d",
+          "type": "Buy",
+          "timestamp": "1607108130",
+          "market": {
+            "id": "0x822bcba4e4af67b75d49d8f47f89670dfa6fe2f7",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "500000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "548729759",
+          "feeAmount": "10000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x33306f57956a920be8ef4d1bed59efee4c9cbc09456c0b69cffce5288d66f29f",
+          "type": "Buy",
+          "timestamp": "1605907492",
+          "market": {
+            "id": "0x822bcba4e4af67b75d49d8f47f89670dfa6fe2f7",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "230000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "275296031",
+          "feeAmount": "4600000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x393aac9c3de81da6c8be6e329e0634461897bf290b71d2489528dea50b2fb5c6",
+          "type": "Buy",
+          "timestamp": "1611347814",
+          "market": {
+            "id": "0x6b83d6fb6cc38d5d0e3fcb44fdf2618450faf28b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "1000000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "1043569038",
+          "feeAmount": "20000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x5017fbd79f623df45bebb2a95030ecf4ce131d6796dee724440487a31f9bc40c",
+          "type": "Buy",
+          "timestamp": "1604552347",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "2420000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "2840906",
+          "feeAmount": "48400",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x5df84e6f63ae9f72263951af879e14fce2d8162d871f3eff6af45d8f7182c64d",
+          "type": "Buy",
+          "timestamp": "1611060481",
+          "market": {
+            "id": "0x1dbb1300e626c757cb271b1140ce66002565605b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "4000000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "4171943348",
+          "feeAmount": "80000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x604e80b8c5fc200a3334078765a54c8f0fa0ead232d4809abf72b7aee04dbcf8",
+          "type": "Buy",
+          "timestamp": "1611060277",
+          "market": {
+            "id": "0xec0ab5519725c758ca73a74ce8b03dc8dc62f1bf",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "500000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "524933635",
+          "feeAmount": "10000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x6379a98f415f4297235b93f729bb3964c5d4cbba1b00573d4ff62261ed7c18f8",
+          "type": "Buy",
+          "timestamp": "1611060717",
+          "market": {
+            "id": "0x822bcba4e4af67b75d49d8f47f89670dfa6fe2f7",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "10856774750",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "10917685722",
+          "feeAmount": "217135495",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x6b0e519695eb525a761c571063b9072785817322c3e1e7e3c99778d82b8d42bc",
+          "type": "Buy",
+          "timestamp": "1611347474",
+          "market": {
+            "id": "0x6b83d6fb6cc38d5d0e3fcb44fdf2618450faf28b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "3000000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "3124793471",
+          "feeAmount": "60000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x7445a658919f6ef519d4979e76c8db71b9b87c78aae5fa4667abf3c940f2323b",
+          "type": "Buy",
+          "timestamp": "1611204102",
+          "market": {
+            "id": "0x6b83d6fb6cc38d5d0e3fcb44fdf2618450faf28b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "5913654860",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "6134240099",
+          "feeAmount": "118273097",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x87c9779b17b8924dfbad933622473d629ffbcdf4e09ef3b952543589ac5aa7a4",
+          "type": "Sell",
+          "timestamp": "1603514160",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "24920559",
+          "outcomeIndex": "0",
+          "outcomeTokensAmount": "73565077",
+          "feeAmount": "508582",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x8a1a3e22d3cc6abd875c4542226974794300a58fe55d0a7fa7af5ef88905da6e",
+          "type": "Buy",
+          "timestamp": "1611362166",
+          "market": {
+            "id": "0x6b83d6fb6cc38d5d0e3fcb44fdf2618450faf28b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "1000000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "1047645363",
+          "feeAmount": "20000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x913711826e5e746056cd15c156153e96e6437842c0dffbcd843bd602cfb71847",
+          "type": "Sell",
+          "timestamp": "1604451693",
+          "market": {
+            "id": "0xd01550d5fc2db8b4f4f02d058d66bfe15e42f391",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "2422396",
+          "outcomeIndex": "0",
+          "outcomeTokensAmount": "21753274",
+          "feeAmount": "49436",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x9490b4111d5c2e42a785e4768e185d6df3e6973d799acc8bda5bcf47903ed2fa",
+          "type": "Buy",
+          "timestamp": "1603397062",
+          "market": {
+            "id": "0xd01550d5fc2db8b4f4f02d058d66bfe15e42f391",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "20000000",
+          "outcomeIndex": "0",
+          "outcomeTokensAmount": "41756893",
+          "feeAmount": "400000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x96325d0638e45fecebd6463398b0e52d77ff3ee37734ec74aa849a52ca59c516",
+          "type": "Sell",
+          "timestamp": "1604161339",
+          "market": {
+            "id": "0xd01550d5fc2db8b4f4f02d058d66bfe15e42f391",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "8201090",
+          "outcomeIndex": "0",
+          "outcomeTokensAmount": "19960075",
+          "feeAmount": "167369",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0x9be3a92bda64d545e28ff6ba25ab0ae6942354463d3197ab4737c4d0cd97577e",
+          "type": "Buy",
+          "timestamp": "1603427812",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "20000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "30973131",
+          "feeAmount": "400000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0xb0635220bb501e9d9a898b320eb8ab1cbd5728f43242fdb12d04dccd729df5c4",
+          "type": "Buy",
+          "timestamp": "1603514256",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "25000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "37438649",
+          "feeAmount": "500000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0xb10e3fa196cebe81d1a20f95e001fb62538b7b7c7042a06b39ccbea2645d2a3f",
+          "type": "Buy",
+          "timestamp": "1611352820",
+          "market": {
+            "id": "0x6b83d6fb6cc38d5d0e3fcb44fdf2618450faf28b",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "1000000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "1046605173",
+          "feeAmount": "20000000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0xb4665ad2abe6bb5de595754fa4e7c2e7bc5c0f256f1029e071d0f70fa68b1738",
+          "type": "Buy",
+          "timestamp": "1603413040",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "25000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "38224109",
+          "feeAmount": "500000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0xbe7f088c0208b6b14e01c1f0c10e0f22506ae9ca8c422ef97d734ed884916e1e",
+          "type": "Buy",
+          "timestamp": "1603562536",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "28000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "41017047",
+          "feeAmount": "560000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0xe2c9328058d61437f1916f73c63741191062eaa4c026429d625a9e6d5fb0181f",
+          "type": "Buy",
+          "timestamp": "1603514096",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "26000000",
+          "outcomeIndex": "0",
+          "outcomeTokensAmount": "73712229",
+          "feeAmount": "520000",
+          "__typename": "Transaction"
+        },
+        {
+          "id": "0xe4d1a22c507b022c84e3067f34233b8c6608c70b2f10b40de0ca8ae8fb2e97bd",
+          "type": "Buy",
+          "timestamp": "1603396062",
+          "market": {
+            "id": "0x365e12b47919b0e3bcf1c8cc3ecd8fb88b80560f",
+            "__typename": "FixedProductMarketMaker"
+          },
+          "tradeAmount": "25000000",
+          "outcomeIndex": "1",
+          "outcomeTokensAmount": "37496492",
+          "feeAmount": "500000",
+          "__typename": "Transaction"
+        }
+      ],
+      "redemptions": [
+        {
+          "id": "0x1e7ffb63a4d83d1ba5df5df7ff2cddb9a550bb6920b76b9bbb62586d238f51a7",
+          "collateralToken": {
+            "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "__typename": "Collateral"
+          },
+          "condition": {
+            "resolutionTimestamp": "1611164756",
+            "id": "0xfab8da8106977db4baa3ce621b9e7c3009504898b8f0288e61e214f142b21752",
+            "__typename": "Condition"
+          },
+          "indexSets": [
+            "1",
+            "2"
+          ],
+          "payout": "4171943348",
+          "__typename": "Redemption"
+        },
+        {
+          "id": "0x732403f3260a06fb0f7ef1f82cb29ba7162e3e3774f47f07610c51fac01bf004",
+          "collateralToken": {
+            "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "__typename": "Collateral"
+          },
+          "condition": {
+            "resolutionTimestamp": "1611166266",
+            "id": "0x4afe273cde9f431f55621c666b7552f11cb8acbc36e06c39ea7e87564a02b34a",
+            "__typename": "Condition"
+          },
+          "indexSets": [
+            "1",
+            "2"
+          ],
+          "payout": "11741711512",
+          "__typename": "Redemption"
+        },
+        {
+          "id": "0x734215c614b76cfb33e21263375063e071a693fe7d9bb6a29879f0596aa0f1a5",
+          "collateralToken": {
+            "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "__typename": "Collateral"
+          },
+          "condition": {
+            "resolutionTimestamp": "1604944541",
+            "id": "0xf2e631ea675c5b09caea0bf65cf7887e25907af2657c8c907f02d9afbff20d05",
+            "__typename": "Condition"
+          },
+          "indexSets": [
+            "1",
+            "2"
+          ],
+          "payout": "187843182",
+          "__typename": "Redemption"
+        },
+        {
+          "id": "0x7f6c5d7ef2b1429455a2b3572bcca5fbc70b1ea496c29211329b5f0a36c64bb0",
+          "collateralToken": {
+            "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "__typename": "Collateral"
+          },
+          "condition": {
+            "resolutionTimestamp": "1605898488",
+            "id": "0x10ee8590fc06e7ce83463337f6bd3b38cee702667bd291712fcda5081e5e2a8d",
+            "__typename": "Condition"
+          },
+          "indexSets": [
+            "1",
+            "2"
+          ],
+          "payout": "229368897",
+          "__typename": "Redemption"
+        },
+        {
+          "id": "0xff844357e3c9f97d3dcaa476b02fd1d4b7779bd9405d31728ff91b87ddb10c36",
+          "collateralToken": {
+            "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "__typename": "Collateral"
+          },
+          "condition": {
+            "resolutionTimestamp": "1604510771",
+            "id": "0x3a28635bce8cf50695662a828248ed73b01e6c55e9ce54a967451281669aeb78",
+            "__typename": "Condition"
+          },
+          "indexSets": [
+            "1",
+            "2"
+          ],
+          "payout": "0",
+          "__typename": "Redemption"
+        }
+      ],
+      "__typename": "Account"
+    }
+  },
+  "loading": false,
+  "networkStatus": 7,
+  "stale": false
+}
