@@ -4,8 +4,9 @@
     <p>Tool to show better profit and loss stats for your polymarket bets</p>
 
     <p>Coming soon: Polymarket tax filings. Easy way to download a sheet for filing Polymarket winnings on your taxes</p>
+<!--
 <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSexM3QKVdcrdIfVG3Y7Oka5K_JtRwfZ2XUNR0t-PZdnqidlwA/viewform?embedded=true" width="640" height="475" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-      <!-- name -->
+       -->
 <p></p>
       <div class="col-10">
         <input v-model="address" type="text" class="form-control form-control-lg" placeholder="Enter Your Polymarket Wallet Address (not working yet)" name="address">
