@@ -1,21 +1,31 @@
 <template>
-  <div class="row">
-    <h1>Polymarket Analyzer and Tax Form Generator</h1>
-    <p>Tool to show better profit and loss stats for your polymarket bets</p>
+  <div>
+    <div  class="row">
+      <h1>Polymarket Analyzer and Tax Form Generator</h1>
+      <p>Tool to show better profit and loss stats for your polymarket bets</p>
 
-    <p>Coming soon: Polymarket tax filings. Easy way to download a sheet for filing Polymarket winnings on your taxes</p>
+      <p>Coming soon: Polymarket tax filings. Easy way to download a sheet for filing Polymarket winnings on your taxes</p>
 
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSexM3QKVdcrdIfVG3Y7Oka5K_JtRwfZ2XUNR0t-PZdnqidlwA/viewform?embedded=true" width="640" height="475" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-       
-<p></p>
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSexM3QKVdcrdIfVG3Y7Oka5K_JtRwfZ2XUNR0t-PZdnqidlwA/viewform?embedded=true" width="640" height="475" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    </div>
+    <div class="row">
       <div class="col-10">
         <input v-model="address" type="text" class="form-control form-control-lg" placeholder="Enter Your Polymarket Wallet Address (not working yet)" name="address">
       </div>
 
       <!-- submit button -->
       <div class="col-auto">
-        <button v-on:click="findTransactions" type="submit" class="btn btn-lg btn-primary">Find</button>
+        <div v-if="loading">
+          <button class="btn btn-lg btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+          </button>
+        </div>
+        <div v-else>
+          <button v-on:click="findTransactions" type="submit" class="btn btn-lg btn-primary">Find</button>
+        </div>
       </div>
+    </div>
       <div v-if="resa" >
         <h3>Redemption History </h3>
         <table class="table table-striped">
@@ -24,7 +34,7 @@
 
               <th scope="col">Description</th>
               <th scope="col">Num Tokens</th>
-              <th scope="col">Value</th>
+              <th scope="col">Proceeds (USDC)</th>
               <th scope="col">Date</th>
               <th scope="col">Tx hash</th>            
             </tr>
@@ -47,7 +57,7 @@
               <th scope="col">Description</th>
               <th scope="col">Type</th>
               <th scope="col">Num Tokens</th>
-              <th scope="col">Value (USDC)</th>
+              <th scope="col">Proceeds (USDC)</th>
               <th scope="col">Date</th>
               <th scope="col">Tx Hash</th>
               
@@ -130,9 +140,20 @@ query account($id: String) {
 async function getTransactionsAndRedemptions(context) {
   let addr = context.address
   //console.log(stub_account1)
-  //context.resa = stub_account1
+  // context.resa = stub_account1
+  //refactor later -- this is clearly not the right way to do it
+  context.loading = 1
   context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}}).then(res => {context.resa = res; console.log(res)})
-
+  let res =  await context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}})
+  context.resa = await res
+  context.resa.data.account.transactions.forEach((el, i, arra) => {
+    if ((el.type == "Buy") && (!el.tradeAmount.startsWith('-'))){
+      //if its not already added -- when its cached its already there
+      el.tradeAmount = "-"+el.tradeAmount
+      console.log(el)
+    }
+  })
+  context.loading = 0
 }
 
 
@@ -147,6 +168,7 @@ export default {
     return {
       resa: '',
       address: '',
+      loading: 0,
     }
   },
   methods: {
@@ -164,8 +186,8 @@ export default {
     },
     formatUSDC: function (value) {
       if (value) {
-        let normalizedUSDC =  value / 1000000
-        return '$' + normalizedUSDC.toFixed(5)
+        let normalizedUSDC =  parseFloat(value) / 1000000
+        return normalizedUSDC.toFixed(5)
       }      
     },
     formatTokenQty: function (value) {
