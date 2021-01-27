@@ -16,54 +16,56 @@
       <div class="col-auto">
         <button v-on:click="findTransactions" type="submit" class="btn btn-lg btn-primary">Find</button>
       </div>
-      <h3>Redemption History </h3>
-      <table class="table table-striped">
-        <thead>
-          <tr>
+      <div v-if="resa" >
+        <h3>Redemption History </h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
 
-            <th scope="col">Description</th>
-            <th scope="col">Num Tokens</th>
-            <th scope="col">Value</th>
-            <th scope="col">Date</th>
-            <th scope="col">Tx hash</th>            
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="redemption in resa.data.account.redemptions" :key="redemption.id">
+              <th scope="col">Description</th>
+              <th scope="col">Num Tokens</th>
+              <th scope="col">Value</th>
+              <th scope="col">Date</th>
+              <th scope="col">Tx hash</th>            
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="redemption in resa.data.account.redemptions" :key="redemption.id">
 
-            <td>{{ redemption.condition.id | getMarketNameByConditionId }}</td>
-            <td>{{ redemption.payout | formatTokenQty }}</td>
-            <td>{{ redemption.payout | formatUSDC }}</td>
-            <td>{{ redemption.condition.resolutionTimestamp | formatDate }}</td>
-            <td>{{redemption.id}}</td>
-          </tr>
-        </tbody>
-      </table>
-      <h3>Transaction History </h3>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Description</th>
-            <th scope="col">Type</th>
-            <th scope="col">Num Tokens</th>
-            <th scope="col">Value (USDC)</th>
-            <th scope="col">Date</th>
-            <th scope="col">Tx Hash</th>
-            
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="transaction in resa.data.account.transactions" :key="transaction.id">
+              <td>{{ redemption.condition.id | getMarketNameByConditionId }}</td>
+              <td>{{ redemption.payout | formatTokenQty }}</td>
+              <td>{{ redemption.payout | formatUSDC }}</td>
+              <td>{{ redemption.condition.resolutionTimestamp | formatDate }}</td>
+              <td>{{redemption.id}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>Transaction History </h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Description</th>
+              <th scope="col">Type</th>
+              <th scope="col">Num Tokens</th>
+              <th scope="col">Value (USDC)</th>
+              <th scope="col">Date</th>
+              <th scope="col">Tx Hash</th>
+              
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="transaction in resa.data.account.transactions" :key="transaction.id">
 
-            <td>{{ transaction.market.id | getMarketName}}</td>
-            <td>{{ transaction.type }}</td> 
-            <td>{{ transaction.outcomeTokensAmount | formatTokenQty }}</td>
-            <td>{{ transaction.tradeAmount | formatUSDC }}</td>
-            <td>{{ transaction.timestamp | formatDate }}</td>
-            <td>{{transaction.id}}</td>
-          </tr>
-        </tbody>
-      </table>
+              <td>{{ transaction.market.id | getMarketName}}</td>
+              <td>{{ transaction.type }}</td> 
+              <td>{{ transaction.outcomeTokensAmount | formatTokenQty }}</td>
+              <td>{{ transaction.tradeAmount | formatUSDC }}</td>
+              <td>{{ transaction.timestamp | formatDate }}</td>
+              <td>{{transaction.id}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
   </div>
 </template>
 
@@ -96,8 +98,8 @@ query {
 }
 `
 const q2 = gql`
-query {
-  account(id: "0x896e5e594ddf322cd180f01df263e0f22ac07a83") {
+query account($id: String) {
+  account(id: $id) {
     id
     transactions {
       id
@@ -126,10 +128,10 @@ query {
 `
 
 async function getTransactionsAndRedemptions(context) {
-  this.address
-  console.log(stub_account1)
-  context.resa = stub_account1
-  //context.$apollo.provider.defaultClient.query({query: q2}).then(res => {context.resa = res; console.log(res)})
+  let addr = context.address
+  //console.log(stub_account1)
+  //context.resa = stub_account1
+  context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}}).then(res => {context.resa = res; console.log(res)})
 
 }
 
@@ -143,8 +145,8 @@ export default {
   },
   data() { 
     return {
-      resa: stub_account1,
-      address: ''
+      resa: '',
+      address: '',
     }
   },
   methods: {
