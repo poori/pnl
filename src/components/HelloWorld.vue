@@ -101,7 +101,7 @@ const q2 = gql`
 query account($id: String) {
   account(id: $id) {
     id
-    transactions {
+      transactions(orderBy: timestamp, orderDirection: desc) {
       id
       type
       timestamp
