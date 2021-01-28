@@ -25,6 +25,8 @@
           <button v-on:click="findTransactions" type="submit" class="btn btn-lg btn-primary">Find</button>
         </div>
       </div>
+      
+      <button v-on:click="calcTax" class="btn btn-lg btn-danger">run</button>
     </div>
       <div v-if="resa" >
         <h3>Redemption History </h3>
@@ -85,6 +87,7 @@ import moment from 'moment'
 import stub_account1 from '../../testdata/account1.json'
 import markets from '../../testdata/allmarkets.json'
 
+const USDC_DIVISOR = 1000000
 
 //preprocess markets into a hash datastructure for faster name lookup
 var markets_hash = {}
@@ -99,7 +102,123 @@ markets.forEach(function (el, i, arr) {
     let normalized_id = el.conditionId.toLowerCase()
     markets_conditionid_hash[normalized_id] = el; //need to do lowercase b/c for some reason upper and lower are mixed in this file
 })
-//query
+
+//util 
+
+function conditionIdToMarketId(conditionId) {
+  return markets_conditionid_hash[conditionId].marketMakerAddress.toLowerCase()
+}
+
+//calculate net gains for 2020
+//Redemption markets:
+//1. get all redemptions to total income. keep track of listof markets
+function redemptionTotal(redemptions_json) {
+  let total = 0
+  redemptions_json.forEach((el, i, arr) => {
+    total += parseInt(el.payout)
+  })
+  return total
+}
+
+//2. get all sells to total that income. keep track of list of markets
+function sellTransactionTotal(transactions_json) {
+  let total = 0
+  transactions_json.forEach((el, i, arr) => {
+    if (el.type == "Sell") {
+      total += el.tradeAmount
+    }
+  })
+  return total
+}
+
+//3. get all buy transactions for all markets from above. 
+function getRealizedMarketIds(transactions_json, redemptions_json) {
+  let market_ids = []
+  transactions_json.forEach((el, i, arr) => {
+    market_ids << el.market.id
+  })
+  redemptions_json.forEach((el, i, arr) => {
+    if (el.type == "Sell") {
+      market_ids << el.condition.id
+    }
+  })
+}
+//4. subtract out any sell transactions from before 2020 (not necessary)
+
+//5. subtract 3 from (1+2)
+
+function profitLossCalc(q2_json) {
+  let redemptions_total = redemptionTotal(q2_json.data.account.redemptions)
+  let redemption_market_ids = []
+  q2_json.data.account.redemptions.forEach((el, i, arr) => { redemption_market_ids.push(conditionIdToMarketId(el.condition.id))})
+  //get sell type txs that are part of any redeemed markets
+  let redemption_market_sells = q2_json.data.account.transactions.filter(tx => redemption_market_ids.includes(tx.market.id)).filter(tx => tx.type == "Sell")
+  let redemption_market_sell_total = 0
+  redemption_market_sells.forEach((tx) => { redemption_market_sell_total += parseInt(tx.tradeAmount)})
+  //redemption totals
+  let total_redemption_market_sell_revenue = redemptions_total + redemption_market_sell_total
+
+  //find redemption buys
+  let redemption_market_buys = q2_json.data.account.transactions.filter(tx => redemption_market_ids.includes(tx.market.id)).filter(tx => tx.type == "Buy")
+  let redemption_market_buy_total = 0
+  redemption_market_buys.forEach((tx) => { redemption_market_buy_total += parseInt(tx.tradeAmount)})
+  
+  //net profit from redemption markets
+  let redemption_market_net_profit = total_redemption_market_sell_revenue - redemption_market_buy_total
+
+  //calculate pnl from buys and sells not in the redemption markets (TODO: need to be more complex if we are supporting other years..currently assumping polymarket started in 2020)
+  let floating_market_sells = q2_json.data.account.transactions.filter(tx => !redemption_market_ids.includes(tx.market.id)).filter(tx => tx.type == "Sell")
+  // for each market, match sell to buy to get cost by bridging through outcomeTokensAmount
+  //console.log(floating_market_sells)
+  let floating_market_ids = [...new Set(floating_market_sells.map(tx => tx.market.id))]
+
+  //FIFO match trades
+  //for each market, get all transactions and sort them. 
+  floating_market_ids.forEach((market_id) => {
+    let tx_history = q2_json.data.account.transactions
+        .filter(tx => tx.market.id == market_id)
+        .sort((a, b) => {return parseInt(a.timestamp) - parseInt(b.timestamp)})
+    let buys = []
+    let sells = []
+    tx_history.forEach((tx) => ((tx.type == "Buy") ? buys : sells).push(tx)) //split into buy and sell arrays
+    //for each sell, loop through each buy and match prices
+    let gains_table = []
+    console.log(buys)
+    console.log(sells)
+    sells.forEach((sell_tx) => {
+      let buy_index = 0
+      let buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)
+      let sell_order_shares = parseInt(sell_tx.outcomeTokensAmount)
+      while (sell_order_shares > 0) {
+
+        if (buy_order_shares >= sell_order_shares) { //if buy order (or remaining buy order shares) is bigger
+          console.log(buys[buy_index])
+          let cost = parseInt(buys[buy_index].tradeAmount) * (sell_order_shares / buy_order_shares)
+          let sell_record = {'sell_id': sell_tx.id, 'shares': sell_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
+          console.log(sell_record)
+          gains_table.push(sell_record)
+          buy_order_shares = buy_order_shares - sell_order_shares
+          if (buy_order_shares == 0) {buy_index++; buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)}
+          sell_order_shares = 0
+        } else { // if sell order is bigger
+          let cost = parseInt(buys[buy_index].tradeAmount) 
+          let sell_record = {'sell_id': sell_tx.id, 'shares': buy_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
+          console.log(sell_record)
+          gains_table.push(sell_record)
+          sell_order_shares =- buy_order_shares
+          buy_index++
+          buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)
+          
+        }
+
+      }
+    })
+    
+  })    
+  //match each sell order for that market olderst first to oldest buys
+}
+
+//queries
 const q_test = gql`
 query {
   account(id: "0x896e5e594ddf322cd180f01df263e0f22ac07a83") {
@@ -176,6 +295,9 @@ export default {
       //let res = await this.$apollo.provider.defaultClient.query({query})
       //this.resa = res;
       getTransactionsAndRedemptions(this)
+    },
+    async calcTax() {
+      profitLossCalc(stub_account1)
     }
   },
   filters: {
@@ -186,13 +308,13 @@ export default {
     },
     formatUSDC: function (value) {
       if (value) {
-        let normalizedUSDC =  parseFloat(value) / 1000000
+        let normalizedUSDC =  parseFloat(value) / USDC_DIVISOR
         return normalizedUSDC.toFixed(5)
       }      
     },
     formatTokenQty: function (value) {
       if (value) {
-        return  value / 1000000
+        return  value / USDC_DIVISOR
       }     
     },
     getMarketName: function (hash) {
