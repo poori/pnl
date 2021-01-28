@@ -28,6 +28,9 @@
       
       <button v-on:click="calcTax" class="btn btn-lg btn-danger">run</button>
     </div>
+      <div v-if="redemption_net">
+        <h4>Net Profit from Redemptions: {{ redemption_net | formatUSDC}}</h4>
+      </div>
       <div v-if="pnl">
         <table class="table table-striped">
           <thead>
@@ -194,6 +197,7 @@ function profitLossCalc(q2_json, context) {
   
   //net profit from redemption markets
   let redemption_market_net_profit = total_redemption_market_sell_revenue - redemption_market_buy_total
+  context.redemption_net = redemption_market_net_profit
 
   //calculate pnl from buys and sells not in the redemption markets (TODO: need to be more complex if we are supporting other years..currently assumping polymarket started in 2020)
   let floating_market_sells = q2_json.data.account.transactions.filter(tx => !redemption_market_ids.includes(tx.market.id)).filter(tx => tx.type == "Sell")
@@ -304,9 +308,6 @@ async function getTransactionsAndRedemptions(context) {
   context.loading = 0
 }
 
-
-
-
 export default {
   name: 'HelloWorld',
   props: {
@@ -317,7 +318,8 @@ export default {
       resa: '',
       address: '',
       loading: 0,
-      pnl: [],
+      pnl: null,
+      redemption_net: 0,
     }
   },
   methods: {
