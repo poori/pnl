@@ -28,6 +28,30 @@
       
       <button v-on:click="calcTax" class="btn btn-lg btn-danger">run</button>
     </div>
+      <div v-if="pnl">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+
+              <th scope="col">sell ID</th>
+              <th scope="col">Num Shares</th>
+              <th scope="col">buyId</th>
+              <th scope="col">cost basis</th>
+              <th scope="col">proceeds</th>            
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="sell_record in pnl" :key="sell_record.sell_id">
+
+              <td>{{ sell_record.sell_id }}</td>
+              <td>{{ sell_record.shares | formatTokenQty }}</td>
+              <td>{{ sell_record.buy_id }}</td>
+              <td>{{ sell_record.cost_basis | formatUSDC }}</td>
+              <td>{{ sell_record.proceeds | formatUSDC }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div v-if="resa" >
         <h3>Redemption History </h3>
         <table class="table table-striped">
@@ -78,6 +102,11 @@
           </tbody>
         </table>
       </div>
+      <footer>
+        * FIFO matching for realized gains and losses<br />
+        * Liquidity pools currently unsupported<br />
+        * only 2020 tax year supported<br />
+      </footer>
   </div>
 </template>
 
@@ -147,7 +176,7 @@ function getRealizedMarketIds(transactions_json, redemptions_json) {
 
 //5. subtract 3 from (1+2)
 
-function profitLossCalc(q2_json) {
+function profitLossCalc(q2_json, context) {
   let redemptions_total = redemptionTotal(q2_json.data.account.redemptions)
   let redemption_market_ids = []
   q2_json.data.account.redemptions.forEach((el, i, arr) => { redemption_market_ids.push(conditionIdToMarketId(el.condition.id))})
@@ -174,48 +203,48 @@ function profitLossCalc(q2_json) {
 
   //FIFO match trades
   //for each market, get all transactions and sort them. 
+  let gains_table = []
   floating_market_ids.forEach((market_id) => {
-    let tx_history = q2_json.data.account.transactions
-        .filter(tx => tx.market.id == market_id)
-        .sort((a, b) => {return parseInt(a.timestamp) - parseInt(b.timestamp)})
-    let buys = []
-    let sells = []
-    tx_history.forEach((tx) => ((tx.type == "Buy") ? buys : sells).push(tx)) //split into buy and sell arrays
-    //for each sell, loop through each buy and match prices
-    let gains_table = []
-    console.log(buys)
-    console.log(sells)
-    sells.forEach((sell_tx) => {
-      let buy_index = 0
-      let buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)
-      let sell_order_shares = parseInt(sell_tx.outcomeTokensAmount)
-      while (sell_order_shares > 0) {
+      let tx_history = q2_json.data.account.transactions
+          .filter(tx => tx.market.id == market_id)
+          .sort((a, b) => {return parseInt(a.timestamp) - parseInt(b.timestamp)})
+      let buys = []
+      let sells = []
+      tx_history.forEach((tx) => ((tx.type == "Buy") ? buys : sells).push(tx)) //split into buy and sell arrays
+      //for each sell, loop through each buy and match prices
+      console.log(buys)
+      console.log(sells)
+      sells.forEach((sell_tx) => {
+        let buy_index = 0
+        let buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)
+        let sell_order_shares = parseInt(sell_tx.outcomeTokensAmount)
+        while (sell_order_shares > 0) {
 
-        if (buy_order_shares >= sell_order_shares) { //if buy order (or remaining buy order shares) is bigger
-          console.log(buys[buy_index])
-          let cost = parseInt(buys[buy_index].tradeAmount) * (sell_order_shares / buy_order_shares)
-          let sell_record = {'sell_id': sell_tx.id, 'shares': sell_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
-          console.log(sell_record)
-          gains_table.push(sell_record)
-          buy_order_shares = buy_order_shares - sell_order_shares
-          if (buy_order_shares == 0) {buy_index++; buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)}
-          sell_order_shares = 0
-        } else { // if sell order is bigger
-          let cost = parseInt(buys[buy_index].tradeAmount) 
-          let sell_record = {'sell_id': sell_tx.id, 'shares': buy_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
-          console.log(sell_record)
-          gains_table.push(sell_record)
-          sell_order_shares =- buy_order_shares
-          buy_index++
-          buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)
-          
+          if (buy_order_shares >= sell_order_shares) { //if buy order (or remaining buy order shares) is bigger
+            console.log(buys[buy_index])
+            let cost = parseInt(buys[buy_index].tradeAmount) * (sell_order_shares / buy_order_shares)
+            let sell_record = {'sell_id': sell_tx.id, 'shares': sell_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
+            console.log(sell_record)
+            gains_table.push(sell_record)
+            buy_order_shares = buy_order_shares - sell_order_shares
+            if (buy_order_shares == 0) {buy_index++; buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)}
+            sell_order_shares = 0
+          } else { // if sell order is bigger
+            let cost = parseInt(buys[buy_index].tradeAmount) 
+            let sell_record = {'sell_id': sell_tx.id, 'shares': buy_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
+            console.log(sell_record)
+            gains_table.push(sell_record)
+            sell_order_shares =- buy_order_shares
+            buy_index++
+            buy_order_shares = parseInt(buys[buy_index].outcomeTokensAmount)
+            
+          }
+
         }
+      })
 
-      }
-    })
-    
   })    
-  //match each sell order for that market olderst first to oldest buys
+  context.pnl = gains_table
 }
 
 //queries
@@ -288,6 +317,7 @@ export default {
       resa: '',
       address: '',
       loading: 0,
+      pnl: [],
     }
   },
   methods: {
@@ -297,7 +327,7 @@ export default {
       getTransactionsAndRedemptions(this)
     },
     async calcTax() {
-      profitLossCalc(stub_account1)
+      profitLossCalc(stub_account1, this)
     }
   },
   filters: {
