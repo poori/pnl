@@ -1,16 +1,18 @@
 <template>
-  <div>
+  <div class="py-5 px-3">
     <div  class="row">
       <h1>Polymarket Analyzer and Tax Form Generator</h1>
       <p>Tool to show better profit and loss stats for your polymarket bets</p>
 
       <p>Coming soon: Polymarket tax filings. Easy way to download a sheet for filing Polymarket winnings on your taxes</p>
-
+<!--
       <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSexM3QKVdcrdIfVG3Y7Oka5K_JtRwfZ2XUNR0t-PZdnqidlwA/viewform?embedded=true" width="640" height="475" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+      -->
     </div>
     <div class="row">
       <div class="col-10">
-        <input v-model="address" type="text" class="form-control form-control-lg" placeholder="Enter Your Polymarket Wallet Address (not working yet)" name="address">
+        <input v-model="address" type="text" class="form-control form-control-lg" placeholder="Enter Your Polymarket Wallet Address" name="address">
+        <div id="emailHelp" class="form-text">Try 0x896e5e594ddf322cd180f01df263e0f22ac07a83 as an example.</div>
       </div>
 
       <!-- submit button -->
@@ -25,45 +27,99 @@
           <button v-on:click="findTransactions" type="submit" class="btn btn-lg btn-primary">Find</button>
         </div>
       </div>
-      
-      <button v-on:click="calcTax" class="btn btn-lg btn-danger">run</button>
     </div>
-      <div v-if="redemption_net">
-        <h4>Net Profit from Redemptions: {{ redemption_net | formatUSDC}}</h4>
+    <div v-if="true || resa" class="row justify-content-md-center">
+      <div class="col col-md-auto mt-5 mb-5">
+        <button v-on:click="calcTax" class="btn btn-secondary">Calculate Gains for Taxes</button>
       </div>
-      <div v-if="pnl">
+    </div>
+      <div v-if="pnl" class="mb-5">
+        <h3>Profit Loss Summary</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Proceeds</th>
+              <th>Cost basis</th>
+              <th>Proceeds</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Redemptions </td>
+              <td>{{redemption_pnl.cost_basis | formatUSDC}}</td>
+              <td>{{redemption_pnl.proceeds | formatUSDC}}</td>
+              <td>{{redemption_pnl.net | formatUSDC}}</td>
+            </tr>
+            <tr>
+              <td>FIFO Matched Trades</td>
+              <td>{{fifo_pnl.cost_basis | formatUSDC}}</td>
+              <td>{{fifo_pnl.proceeds | formatUSDC}}</td>
+              <td>{{fifo_pnl.net | formatUSDC}}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total </td>
+              <td>{{pnl.cost_basis | formatUSDC}}</td>
+              <td>{{pnl.proceeds | formatUSDC}}</td>
+              <td>{{pnl.net | formatUSDC}}</td>
+            </tr>
+          </tfoot>
+          
+        </table>
+      </div>
+
+      <div v-if="fifo_table" class="mt-6">
+        <h5>FIFO matched trade details</h5>
+
         <table class="table table-striped">
           <thead>
             <tr>
 
-              <th scope="col">sell ID</th>
+
               <th scope="col">Num Shares</th>
-              <th scope="col">buyId</th>
-              <th scope="col">cost basis</th>
-              <th scope="col">proceeds</th>            
+              <th scope="col">Cost basis</th>
+              <th scope="col">Proceeds</th>            
+              <th scope="col">Buy ID</th>
+              <th scope="col">Sell ID</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="sell_record in pnl" :key="sell_record.sell_id">
+            <tr v-for="sell_record in fifo_table" :key="sell_record.sell_id">
 
-              <td>{{ sell_record.sell_id }}</td>
               <td>{{ sell_record.shares | formatTokenQty }}</td>
-              <td>{{ sell_record.buy_id }}</td>
               <td>{{ sell_record.cost_basis | formatUSDC }}</td>
               <td>{{ sell_record.proceeds | formatUSDC }}</td>
+              <td>{{ sell_record.buy_id }}</td>
+              <td>{{ sell_record.sell_id }}</td>
+
             </tr>
           </tbody>
+          <tfoot v-if="fifo_pnl">
+            <tr>
+              <td>Totals</td>
+              <td>{{fifo_pnl.cost_basis | formatUSDC}}</td>
+              <td>{{fifo_pnl.proceeds | formatUSDC}}</td>
+              <td>Total: {{fifo_pnl.net | formatUSDC}}</td>
+              <td></td>
+              <td></td>
+
+            </tr>
+          </tfoot>
         </table>
       </div>
       <div v-if="resa" >
-        <h3>Redemption History </h3>
+        <br /><br />
+        <h2> Transaction History</h2>
+        <h3>Redemptions</h3>
         <table class="table table-striped">
           <thead>
             <tr>
 
               <th scope="col">Description</th>
               <th scope="col">Num Tokens</th>
-              <th scope="col">Proceeds (USDC)</th>
+              <th scope="col">Proceeds</th>
               <th scope="col">Date</th>
               <th scope="col">Tx hash</th>            
             </tr>
@@ -79,7 +135,7 @@
             </tr>
           </tbody>
         </table>
-        <h3>Transaction History </h3>
+        <h3>Trades</h3>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -105,10 +161,17 @@
           </tbody>
         </table>
       </div>
-      <footer>
-        * FIFO matching for realized gains and losses<br />
-        * Liquidity pools currently unsupported<br />
-        * only 2020 tax year supported<br />
+      <footer class="mt-5">
+        
+        Note:<br />
+        <ul>
+          <li><strong>This is a beta product. Accuracy not guaranteed.</strong></li>
+          <li>FIFO matching for realized gains and losses</li>
+          <li>Liquidity pools currently unsupported</li>
+          <li>Share merging untested</li>
+          <li>only 2020 tax year supported</li>
+        </ul>
+
       </footer>
   </div>
 </template>
@@ -196,8 +259,7 @@ function profitLossCalc(q2_json, context) {
   redemption_market_buys.forEach((tx) => { redemption_market_buy_total += parseInt(tx.tradeAmount)})
   
   //net profit from redemption markets
-  let redemption_market_net_profit = total_redemption_market_sell_revenue - redemption_market_buy_total
-  context.redemption_net = redemption_market_net_profit
+  let redemption_market_net_profit = total_redemption_market_sell_revenue + redemption_market_buy_total
 
   //calculate pnl from buys and sells not in the redemption markets (TODO: need to be more complex if we are supporting other years..currently assumping polymarket started in 2020)
   let floating_market_sells = q2_json.data.account.transactions.filter(tx => !redemption_market_ids.includes(tx.market.id)).filter(tx => tx.type == "Sell")
@@ -227,7 +289,7 @@ function profitLossCalc(q2_json, context) {
           if (buy_order_shares >= sell_order_shares) { //if buy order (or remaining buy order shares) is bigger
             console.log(buys[buy_index])
             let cost = parseInt(buys[buy_index].tradeAmount) * (sell_order_shares / buy_order_shares)
-            let sell_record = {'sell_id': sell_tx.id, 'shares': sell_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
+            let sell_record = {'sell_id': sell_tx.id, 'shares': sell_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': parseInt(sell_tx.tradeAmount)}
             console.log(sell_record)
             gains_table.push(sell_record)
             buy_order_shares = buy_order_shares - sell_order_shares
@@ -235,7 +297,7 @@ function profitLossCalc(q2_json, context) {
             sell_order_shares = 0
           } else { // if sell order is bigger
             let cost = parseInt(buys[buy_index].tradeAmount) 
-            let sell_record = {'sell_id': sell_tx.id, 'shares': buy_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': sell_tx.tradeAmount}
+            let sell_record = {'sell_id': sell_tx.id, 'shares': buy_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': parseInt(sell_tx.tradeAmount)}
             console.log(sell_record)
             gains_table.push(sell_record)
             sell_order_shares =- buy_order_shares
@@ -248,7 +310,16 @@ function profitLossCalc(q2_json, context) {
       })
 
   })    
-  context.pnl = gains_table
+  let fifo_total_cost = 0
+  let fifo_total_proceeds = 0
+  gains_table.forEach((row) => {fifo_total_cost += row.cost_basis})
+  gains_table.forEach((row) => {fifo_total_proceeds += row.proceeds})
+  let fifo_total_net =  fifo_total_proceeds + fifo_total_cost
+
+  context.redemption_pnl = {'proceeds': total_redemption_market_sell_revenue, 'cost_basis': redemption_market_buy_total, 'net': redemption_market_net_profit}
+  context.fifo_table = gains_table
+  context.fifo_pnl = {'proceeds': fifo_total_proceeds, 'cost_basis': fifo_total_cost, 'net': fifo_total_net}
+  context.pnl = {'proceeds': total_redemption_market_sell_revenue + fifo_total_proceeds, 'cost_basis': redemption_market_buy_total + fifo_total_cost, 'net': redemption_market_net_profit + fifo_total_net}
 }
 
 //queries
@@ -319,7 +390,9 @@ export default {
       address: '',
       loading: 0,
       pnl: null,
-      redemption_net: 0,
+      fifo_table: null,
+      redemption_pnl: null,
+      fifo_pnl: null,
     }
   },
   methods: {
@@ -329,7 +402,7 @@ export default {
       getTransactionsAndRedemptions(this)
     },
     async calcTax() {
-      profitLossCalc(stub_account1, this)
+      profitLossCalc(this.resa, this)
     }
   },
   filters: {
@@ -341,7 +414,7 @@ export default {
     formatUSDC: function (value) {
       if (value) {
         let normalizedUSDC =  parseFloat(value) / USDC_DIVISOR
-        return normalizedUSDC.toFixed(5)
+        return normalizedUSDC.toFixed(2)
       }      
     },
     formatTokenQty: function (value) {
@@ -375,18 +448,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+tfoot {
+  font-weight:bold;
 }
 </style>

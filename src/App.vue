@@ -1,6 +1,6 @@
 <template>
-  <div id="app" class="container">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div id="app">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">Polynalysis</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,7 +15,9 @@
         </div>
       </div>
     </nav>
-    <HelloWorld />
+    <main class="container">
+      <HelloWorld />
+    </main>
   </div>
 </template>
 
