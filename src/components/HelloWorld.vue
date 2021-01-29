@@ -28,9 +28,11 @@
         </div>
       </div>
     </div>
-    <div v-if="true || resa" class="row justify-content-md-center">
+    <div v-if="resa" class="row justify-content-md-center">
       <div class="col col-md-auto mt-5 mb-5">
-        <button v-on:click="calcTax" class="btn btn-secondary">Calculate Gains for Taxes</button>
+        <button v-on:click="calcTax" class="btn btn-primary">Calculate Gains</button>
+        &nbsp; &nbsp;
+        <button v-on:click="calcTax" class="btn btn-secondary">Calculate 2020 Gains</button>
       </div>
     </div>
       <div v-if="pnl" class="mb-5">
@@ -166,10 +168,11 @@
         Note:<br />
         <ul>
           <li><strong>This is a beta product. Accuracy not guaranteed.</strong></li>
+          <li><strong>Currently shows full profit and loss over the entire lifetime, not 2020 tax filings (in progress)</strong></li>
           <li>FIFO matching for realized gains and losses</li>
           <li>Liquidity pools currently unsupported</li>
           <li>Share merging untested</li>
-          <li>only 2020 tax year supported</li>
+          <li>only 2020 tax year will be supported for now</li>
         </ul>
 
       </footer>
