@@ -14,6 +14,7 @@
         <input v-model="address" type="text" class="form-control form-control-lg" placeholder="Enter Your Polymarket Wallet Address" name="address">
         <div id="emailHelp" class="form-text">Try 0x896e5e594ddf322cd180f01df263e0f22ac07a83 as an example.</div>
       </div>
+      
 
       <!-- submit button -->
       <div class="col-auto">
@@ -28,7 +29,13 @@
         </div>
       </div>
     </div>
-    <div v-if="true | resa" class="row justify-content-md-center">
+    <p v-if="errors.length" class="text-danger">
+      <b>Please correct the following error(s):</b>
+      <ul>
+        <li v-for="error in errors">{{ error }}</li>
+      </ul>
+    </p>
+    <div v-if="resa" class="row justify-content-md-center">
       <div class="col col-md-auto mt-5 mb-5">
         <button v-on:click="calcTax" class="btn btn-primary">Calculate Gains</button>
         &nbsp; &nbsp;
@@ -479,10 +486,18 @@ export default {
       fifo_pnl: null,
       market_cost_basis_h: null,
       market_cost_basis_total: null,
+      errors: [],
     }
   },
   methods: {
     async findTransactions() {
+        
+      if (!/^(0x){1}[0-9a-fA-F]{40}$/i.test(this.address)) {
+          this.errors = ["Please enter a valid Polymarket Wallet Address. You can find the address on your deposit page in Polymarket"]
+          return
+      } 
+      this.errors = []
+           
       //let res = await this.$apollo.provider.defaultClient.query({query})
       //this.resa = res;
       getTransactionsAndRedemptions(this)
