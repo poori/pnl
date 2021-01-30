@@ -28,13 +28,47 @@
         </div>
       </div>
     </div>
-    <div v-if="resa" class="row justify-content-md-center">
+    <div v-if="true | resa" class="row justify-content-md-center">
       <div class="col col-md-auto mt-5 mb-5">
         <button v-on:click="calcTax" class="btn btn-primary">Calculate Gains</button>
         &nbsp; &nbsp;
         <button v-on:click="calcTax" class="btn btn-secondary">Calculate 2020 Gains</button>
       </div>
     </div>
+          <div v-if="market_cost_basis_h" class="mb-5">
+        <h3>Profit Loss Summary By Closed Market</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th class="text-end">Cost Basis</th>
+              <th class="text-end">Proceeds</th>
+              <th class="text-end">Net</th>
+              <th class="text-end">Return(%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="market_pnl in market_cost_basis_h" :key="market_pnl.id">
+              <td>{{market_pnl.name }}</td>
+              <td class="text-end">{{market_pnl.cost | formatUSDC}}</td>
+              <td class="text-end">{{market_pnl.proceeds | formatUSDC}}</td>
+              <td class="text-end">{{market_pnl.net | formatUSDC}}</td>
+              <td class="text-end">{{ ((market_pnl.net / market_pnl.cost * -1) * 100).toFixed(2) }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="text-end">Total: </td>
+              <td class="text-end">{{market_cost_basis_total.cost | formatUSDC}}</td>
+              <td class="text-end">{{market_cost_basis_total.proceeds | formatUSDC}}</td>
+              <td class="text-end">{{market_cost_basis_total.net | formatUSDC}} </td>
+              <td class="text-end">{{ ((market_cost_basis_total.net / market_cost_basis_total.cost * -1) * 100).toFixed(2) }}</td>
+            </tr>
+          </tfoot>
+          
+        </table>
+      </div>
+      <!--
       <div v-if="pnl" class="mb-5">
         <h3>Profit Loss Summary</h3>
         <table class="table table-striped">
@@ -71,7 +105,7 @@
           
         </table>
       </div>
-
+-->
       <div v-if="fifo_table" class="mt-6">
         <h5>FIFO matched trade details</h5>
 
@@ -79,7 +113,7 @@
           <thead>
             <tr>
 
-
+              <th scope="col">Question</th>
               <th scope="col">Num Shares</th>
               <th scope="col">Cost basis</th>
               <th scope="col">Proceeds</th>            
@@ -89,6 +123,7 @@
           </thead>
           <tbody>
             <tr v-for="sell_record in fifo_table" :key="sell_record.sell_id">
+              <td>{{ sell_record.market_id | getMarketName }}</td>
 
               <td>{{ sell_record.shares | formatTokenQty }}</td>
               <td>{{ sell_record.cost_basis | formatUSDC }}</td>
@@ -123,7 +158,7 @@
               <th scope="col">Num Tokens</th>
               <th scope="col">Proceeds</th>
               <th scope="col">Date</th>
-              <th scope="col">Tx hash</th>            
+              <th scope="col">Tx_hash</th>            
             </tr>
           </thead>
           <tbody>
@@ -133,7 +168,7 @@
               <td>{{ redemption.payout | formatTokenQty }}</td>
               <td>{{ redemption.payout | formatUSDC }}</td>
               <td>{{ redemption.condition.resolutionTimestamp | formatDate }}</td>
-              <td>{{redemption.id}}</td>
+              <td><a v-bind:href="'https://explorer-mainnet.maticvigil.com/tx/'+redemption.id">Matic <i class="bi bi-arrow-up-right-square-fill"></i></a></td>
             </tr>
           </tbody>
         </table>
@@ -146,7 +181,7 @@
               <th scope="col">Num Tokens</th>
               <th scope="col">Proceeds (USDC)</th>
               <th scope="col">Date</th>
-              <th scope="col">Tx Hash</th>
+              <th scope="col">Tx_Hash</th>
               
             </tr>
           </thead>
@@ -158,7 +193,7 @@
               <td>{{ transaction.outcomeTokensAmount | formatTokenQty }}</td>
               <td>{{ transaction.tradeAmount | formatUSDC }}</td>
               <td>{{ transaction.timestamp | formatDate }}</td>
-              <td>{{transaction.id}}</td>
+              <td><a v-bind:href="'https://explorer-mainnet.maticvigil.com/tx/'+transaction.id">Matic <i class="bi bi-arrow-up-right-square-fill"></i></a></td>
             </tr>
           </tbody>
         </table>
@@ -246,6 +281,7 @@ function getRealizedMarketIds(transactions_json, redemptions_json) {
 //5. subtract 3 from (1+2)
 
 function profitLossCalc(q2_json, context) {
+  
   let redemptions_total = redemptionTotal(q2_json.data.account.redemptions)
   let redemption_market_ids = []
   q2_json.data.account.redemptions.forEach((el, i, arr) => { redemption_market_ids.push(conditionIdToMarketId(el.condition.id))})
@@ -261,6 +297,46 @@ function profitLossCalc(q2_json, context) {
   let redemption_market_buy_total = 0
   redemption_market_buys.forEach((tx) => { redemption_market_buy_total += parseInt(tx.tradeAmount)})
   
+  //test
+  //by market redemptions
+  let market_cost_basis_h = {}
+  //find redemption buys
+  console.log(redemption_market_ids)
+  let cost_basis_buys = q2_json.data.account.transactions.filter(tx => redemption_market_ids.includes(tx.market.id)) //.filter(tx => tx.type == "Buy")
+  q2_json.data.account.redemptions.forEach((el, i, arr) => { 
+    let a= conditionIdToMarketId(el.condition.id); 
+    if ((typeof market_cost_basis_h[a] == "undefined")) { // if it doesn't exist yet (unique condition redemption)
+      market_cost_basis_h[a] = {}; 
+      market_cost_basis_h[a].id = markets_hash[a].marketMakerAddress
+      market_cost_basis_h[a].name = markets_hash[a].question; 
+      market_cost_basis_h[a].proceeds = parseInt(el.payout)
+    } else {
+      market_cost_basis_h[a].proceeds += parseInt(el.payout)
+    }
+    })
+  //todo: combine redemptions of the same market_id
+  cost_basis_buys.forEach((tx) => { 
+
+  if ((typeof market_cost_basis_h[tx.market.id].cost) !== "undefined") { 
+      market_cost_basis_h[tx.market.id].cost += parseInt(tx.tradeAmount)
+    } else {
+      market_cost_basis_h[tx.market.id].cost = parseInt(tx.tradeAmount)
+    } 
+  })
+      
+  let totals = {"cost": 0, "proceeds": 0, "net": 0}
+  for(var index in market_cost_basis_h) {
+//    console.log(market_cost_basis_h[index].proceeds)
+  //  console.log(market_cost_basis_h[index].cost)
+    //console.log(market_cost_basis_h[index].proceeds + market_cost_basis_h[index].cost)
+    market_cost_basis_h[index].net = (market_cost_basis_h[index].proceeds + market_cost_basis_h[index].cost) 
+    totals.cost += market_cost_basis_h[index].cost
+    totals.proceeds += market_cost_basis_h[index].proceeds
+    totals.net += market_cost_basis_h[index].net
+  }
+  context.market_cost_basis_h = market_cost_basis_h
+  context.market_cost_basis_total = totals
+
   //net profit from redemption markets
   let redemption_market_net_profit = total_redemption_market_sell_revenue + redemption_market_buy_total
 
@@ -292,7 +368,7 @@ function profitLossCalc(q2_json, context) {
           if (buy_order_shares >= sell_order_shares) { //if buy order (or remaining buy order shares) is bigger
             console.log(buys[buy_index])
             let cost = parseInt(buys[buy_index].tradeAmount) * (sell_order_shares / buy_order_shares)
-            let sell_record = {'sell_id': sell_tx.id, 'shares': sell_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': parseInt(sell_tx.tradeAmount)}
+            let sell_record = {'market_id': market_id, 'sell_id': sell_tx.id, 'shares': sell_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': parseInt(sell_tx.tradeAmount)}
             console.log(sell_record)
             gains_table.push(sell_record)
             buy_order_shares = buy_order_shares - sell_order_shares
@@ -300,7 +376,7 @@ function profitLossCalc(q2_json, context) {
             sell_order_shares = 0
           } else { // if sell order is bigger
             let cost = parseInt(buys[buy_index].tradeAmount) 
-            let sell_record = {'sell_id': sell_tx.id, 'shares': buy_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': parseInt(sell_tx.tradeAmount)}
+            let sell_record = {'market_id': market_id, 'sell_id': sell_tx.id, 'shares': buy_order_shares, 'buy_id': buys[buy_index].id, 'cost_basis': cost, 'proceeds': parseInt(sell_tx.tradeAmount)}
             console.log(sell_record)
             gains_table.push(sell_record)
             sell_order_shares =- buy_order_shares
@@ -366,12 +442,12 @@ query account($id: String) {
 async function getTransactionsAndRedemptions(context) {
   let addr = context.address
   //console.log(stub_account1)
-  // context.resa = stub_account1
+   context.resa = stub_account1
   //refactor later -- this is clearly not the right way to do it
   context.loading = 1
-  context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}}).then(res => {context.resa = res; console.log(res)})
-  let res =  await context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}})
-  context.resa = await res
+  //context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}}).then(res => {context.resa = res; console.log(res)})
+  //let res =  await context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}})
+  //context.resa = await res
   context.resa.data.account.transactions.forEach((el, i, arra) => {
     if ((el.type == "Buy") && (!el.tradeAmount.startsWith('-'))){
       //if its not already added -- when its cached its already there
@@ -396,6 +472,8 @@ export default {
       fifo_table: null,
       redemption_pnl: null,
       fifo_pnl: null,
+      market_cost_basis_h: null,
+      market_cost_basis_total: null,
     }
   },
   methods: {
@@ -406,6 +484,7 @@ export default {
     },
     async calcTax() {
       profitLossCalc(this.resa, this)
+      //profitLossCalc(stub_account1, this)
     }
   },
   filters: {
