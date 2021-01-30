@@ -36,7 +36,7 @@
       </div>
     </div>
           <div v-if="market_cost_basis_h" class="mb-5">
-        <h3>Profit Loss Summary By Closed Market</h3>
+        <h3>Profit Loss Summary For Markets Where You've Held Till The End</h3>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -58,7 +58,7 @@
           </tbody>
           <tfoot>
             <tr>
-              <td class="text-end">Total: </td>
+              <td>Total </td>
               <td class="text-end">{{market_cost_basis_total.cost | formatUSDC}}</td>
               <td class="text-end">{{market_cost_basis_total.proceeds | formatUSDC}}</td>
               <td class="text-end">{{market_cost_basis_total.net | formatUSDC}} </td>
@@ -107,7 +107,7 @@
       </div>
 -->
       <div v-if="fifo_table" class="mt-6">
-        <h5>FIFO matched trade details</h5>
+        <h5>Profit and Loss Summary for Markets You've traded out of before it ended (FIFO matched)</h5>
 
         <table class="table table-striped">
           <thead>
@@ -125,20 +125,20 @@
             <tr v-for="sell_record in fifo_table" :key="sell_record.sell_id">
               <td>{{ sell_record.market_id | getMarketName }}</td>
 
-              <td>{{ sell_record.shares | formatTokenQty }}</td>
-              <td>{{ sell_record.cost_basis | formatUSDC }}</td>
-              <td>{{ sell_record.proceeds | formatUSDC }}</td>
-              <td>{{ sell_record.buy_id }}</td>
-              <td>{{ sell_record.sell_id }}</td>
+              <td class="text-end">{{ sell_record.shares | formatTokenQty }}</td>
+              <td class="text-end">{{ sell_record.cost_basis | formatUSDC }}</td>
+              <td class="text-end">{{ sell_record.proceeds | formatUSDC }}</td>
+              <td><MaticLink v-bind:id=sell_record.buy_id ></MaticLink></td>
+              <td><MaticLink v-bind:id=sell_record.sell_id ></MaticLink></td>
 
             </tr>
           </tbody>
           <tfoot v-if="fifo_pnl">
             <tr>
-              <td>Totals</td>
-              <td>{{fifo_pnl.cost_basis | formatUSDC}}</td>
-              <td>{{fifo_pnl.proceeds | formatUSDC}}</td>
-              <td>Total: {{fifo_pnl.net | formatUSDC}}</td>
+              <td>Total</td>
+              <td class="text-end">{{fifo_pnl.cost_basis | formatUSDC}}</td>
+              <td class="text-end">{{fifo_pnl.proceeds | formatUSDC}}</td>
+              <td class="text-end">{{fifo_pnl.net | formatUSDC}}</td>
               <td></td>
               <td></td>
 
@@ -168,7 +168,7 @@
               <td>{{ redemption.payout | formatTokenQty }}</td>
               <td>{{ redemption.payout | formatUSDC }}</td>
               <td>{{ redemption.condition.resolutionTimestamp | formatDate }}</td>
-              <td><a v-bind:href="'https://explorer-mainnet.maticvigil.com/tx/'+redemption.id">Matic <i class="bi bi-arrow-up-right-square-fill"></i></a></td>
+              <td><MaticLink v-bind:id=redemption.id ></MaticLink></td>
             </tr>
           </tbody>
         </table>
@@ -193,7 +193,7 @@
               <td>{{ transaction.outcomeTokensAmount | formatTokenQty }}</td>
               <td>{{ transaction.tradeAmount | formatUSDC }}</td>
               <td>{{ transaction.timestamp | formatDate }}</td>
-              <td><a v-bind:href="'https://explorer-mainnet.maticvigil.com/tx/'+transaction.id">Matic <i class="bi bi-arrow-up-right-square-fill"></i></a></td>
+              <td><MaticLink v-bind:id=transaction.id ></MaticLink></td>
             </tr>
           </tbody>
         </table>
@@ -219,6 +219,8 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import stub_account1 from '../../testdata/account1.json'
 import markets from '../../testdata/allmarkets.json'
+import MaticLink from './MaticLink'
+
 
 const USDC_DIVISOR = 1000000
 
@@ -442,12 +444,12 @@ query account($id: String) {
 async function getTransactionsAndRedemptions(context) {
   let addr = context.address
   //console.log(stub_account1)
-   context.resa = stub_account1
+  //context.resa = stub_account1
   //refactor later -- this is clearly not the right way to do it
   context.loading = 1
-  //context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}}).then(res => {context.resa = res; console.log(res)})
-  //let res =  await context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}})
-  //context.resa = await res
+  context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}}).then(res => {context.resa = res; console.log(res)})
+  let res =  await context.$apollo.provider.defaultClient.query({query: q2, variables: {id: addr}})
+  context.resa = await res
   context.resa.data.account.transactions.forEach((el, i, arra) => {
     if ((el.type == "Buy") && (!el.tradeAmount.startsWith('-'))){
       //if its not already added -- when its cached its already there
@@ -460,6 +462,9 @@ async function getTransactionsAndRedemptions(context) {
 
 export default {
   name: 'HelloWorld',
+  components: {
+    MaticLink
+  },
   props: {
     msg: String
   },
@@ -518,6 +523,7 @@ export default {
       }
       return hash
     },
+
     
   }
   // apollo: {
