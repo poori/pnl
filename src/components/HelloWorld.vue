@@ -493,7 +493,7 @@ export default {
     async findTransactions() {
         
       if (!/^(0x){1}[0-9a-fA-F]{40}$/i.test(this.address)) {
-          this.errors = ["Please enter a valid Polymarket Wallet Address. You can find the address on your deposit page in Polymarket"]
+          this.errors = ["Enter a valid Polymarket Wallet Address. You can find the address on your deposit page in Polymarket"]
           return
       } 
       this.errors = []
