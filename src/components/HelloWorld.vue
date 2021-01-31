@@ -497,7 +497,7 @@ export default {
           return
       } 
       this.errors = []
-           
+      this.address = this.address.toLowerCase()
       //let res = await this.$apollo.provider.defaultClient.query({query})
       //this.resa = res;
       getTransactionsAndRedemptions(this)
