@@ -121,9 +121,9 @@
             <tr>
 
               <th scope="col">Question</th>
-              <th scope="col">Num Shares</th>
-              <th scope="col">Cost basis</th>
-              <th scope="col">Proceeds</th>            
+              <th scope="col"  class="text-end">Num Shares</th>
+              <th scope="col"  class="text-end">Cost basis</th>
+              <th scope="col"  class="text-end">Proceeds</th>            
               <th scope="col">Buy ID</th>
               <th scope="col">Sell ID</th>
             </tr>
@@ -491,7 +491,7 @@ export default {
   },
   methods: {
     async findTransactions() {
-        
+      
       if (!/^(0x){1}[0-9a-fA-F]{40}$/i.test(this.address)) {
           this.errors = ["Enter a valid Polymarket Wallet Address. You can find the address on your deposit page in Polymarket"]
           return

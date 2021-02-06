@@ -11,8 +11,8 @@ import {ApolloClient, gql} from 'apollo-boost'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
 
-//const POLYMARKET_URL = "https://subgraph-matic.poly.market/subgraphs/name/TokenUnion/polymarket"
-const POLYMARKET_URL = "https://subgraph-backup.poly.market/subgraphs/name/TokenUnion/polymarket2"
+const POLYMARKET_URL = "https://subgraph-matic.poly.market/subgraphs/name/TokenUnion/polymarket"
+//const POLYMARKET_URL = "https://subgraph-backup.poly.market/subgraphs/name/TokenUnion/polymarket2"
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
